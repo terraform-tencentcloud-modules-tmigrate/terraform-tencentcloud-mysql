@@ -34,6 +34,35 @@ variable "device_type" {
   default     = "UNIVERSAL"
 }
 
+variable "disk_type" {
+  description = "Disk type. Only valid for BASIC_V2 (single-node cloud disk) or CLOUD_NATIVE_CLUSTER* instances. Valid values: CLOUD_SSD, CLOUD_HSSD (enhanced SSD), CLOUD_PREMIUM (high-performance). ForceNew."
+  type = string
+  default     = null
+}
+
+# ---------------------------------------------------------------------------
+# KMS TDE storage encryption (tencentcloud_mysql_instance_encryption_operation)
+# Independent resource, attached after instance creation.
+# ---------------------------------------------------------------------------
+
+variable "set_mysql_encryption" {
+  description = "Set to true to create a tencentcloud_mysql_instance_encryption_operation resource on the instance (enables KMS TDE storage encryption)."
+  type        = bool
+  default     = false
+}
+
+variable "encryption_key_id" {
+  description = "Custom KMS CMK ID for TDE encryption. If empty, Tencent Cloud auto-generates a key with name 'KMS-CDB'."
+  type        = string
+  default     = null
+}
+
+variable "encryption_key_region" {
+  description = "KMS region for the encryption key (e.g. ap-shanghai). Required when encryption_key_id is not null. Even when key_id is null (auto-generated KMS-CDB), this field is recommended."
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "Instance tags."
   type        = map(string)
