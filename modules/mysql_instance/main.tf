@@ -9,7 +9,8 @@ resource "random_password" "root" {
   min_special      = 2
   min_upper        = 2
   min_lower        = 2
-  override_special = "~!@#$%^&*_-+=`|(){}[]:;'<>,.?/"
+  # 腾讯云 mysql root_password 只接受 _+-&=!@#$%^*() 这 8 种特殊字符, 不能用其他
+  override_special = "_+-&=!@#$%^*()"
 }
 
 resource "tencentcloud_mysql_instance" "this" {
