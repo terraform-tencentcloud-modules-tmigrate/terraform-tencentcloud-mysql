@@ -22,7 +22,6 @@ resource "tencentcloud_mysql_instance" "this" {
   cpu  = var.cpu
   engine_version    = var.engine_version
   device_type       = var.device_type
-  disk_type         = var.disk_type
   project_id        = var.project_id
   root_password     = local.root_password
   security_groups   = var.security_groups
@@ -49,16 +48,5 @@ resource "tencentcloud_mysql_instance" "this" {
   second_slave_zone = var.second_slave_zone
   slave_deploy_mode = var.slave_deploy_mode
   slave_sync_mode   = var.slave_sync_mode
-}
-
-# KMS TDE storage encryption (independent resource, attached after instance creation)
-resource "tencentcloud_mysql_instance_encryption_operation" "encryption" {
-  count = var.set_mysql_encryption && var.create_mysql_instance ? 1 : 0
-
-  instance_id = tencentcloud_mysql_instance.this[0].id
-  key_id      = var.encryption_key_id
-  key_region  = var.encryption_key_region
-
-  depends_on = [tencentcloud_mysql_instance.this]
 }
 
