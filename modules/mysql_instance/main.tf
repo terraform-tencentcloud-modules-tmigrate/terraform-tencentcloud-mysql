@@ -44,12 +44,26 @@ resource "tencentcloud_mysql_instance" "this" {
   subnet_id        = var.subnet_id
   vpc_id           = var.vpc_id
 
-  # slave configuration
+  # slave configuration (for BASIC_V2 / UNIVERSAL / EXCLUSIVE multi-AZ, NOT for CLOUD_NATIVE_CLUSTER)
 
   first_slave_zone  = var.first_slave_zone
   second_slave_zone = var.second_slave_zone
   slave_deploy_mode = var.slave_deploy_mode
   slave_sync_mode   = var.slave_sync_mode
+
+  # cluster topology (for CLOUD_NATIVE_CLUSTER / CLOUD_NATIVE_CLUSTER_EXCLUSIVE, 新形态云盘版单节点/集群)
+  # 单节点形态: 只传 read_write_node, read_only_nodes 不传 (空数组)
+  dynamic "cluster_topology" {
+    for_each = startswith(var.device_type, "CLOUD_NATIVE_CLUSTER") ? [1] : []
+    content {
+      read_write_node {
+        zone = var.availability_zone
+      }
+      read_only_nodes {
+        is_random_zone = true
+      }
+    }
+  }
 }
 
 # KMS TDE storage encryption (independent resource, attached after instance creation)
