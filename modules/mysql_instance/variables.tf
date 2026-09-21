@@ -63,6 +63,17 @@ variable "encryption_key_region" {
   default     = null
 }
 
+# ---------------------------------------------------------------------------
+# SSL network transit encryption (tencentcloud_mysql_ssl)
+# Independent resource, managed separately from instance.
+# ---------------------------------------------------------------------------
+
+variable "set_mysql_ssl" {
+  description = "Set to true to enable SSL on the instance (creates tencentcloud_mysql_ssl resource with status=ON). When the resource is destroyed, SSL is automatically disabled."
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Instance tags."
   type        = map(string)

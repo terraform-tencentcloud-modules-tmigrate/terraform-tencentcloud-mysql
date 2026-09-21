@@ -80,3 +80,14 @@ resource "tencentcloud_mysql_instance_encryption_operation" "encryption" {
   depends_on = [tencentcloud_mysql_instance.this]
 }
 
+# SSL network transit encryption (separate resource, managed independently)
+# When this resource is destroyed, SSL is automatically disabled on the instance.
+resource "tencentcloud_mysql_ssl" "ssl" {
+  count = var.set_mysql_ssl && var.create_mysql_instance ? 1 : 0
+
+  instance_id = tencentcloud_mysql_instance.this[0].id
+  status      = "ON"
+
+  depends_on = [tencentcloud_mysql_instance.this]
+}
+
