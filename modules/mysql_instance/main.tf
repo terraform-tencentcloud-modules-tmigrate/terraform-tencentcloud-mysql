@@ -60,7 +60,10 @@ resource "tencentcloud_mysql_instance" "this" {
         zone = var.availability_zone
       }
       read_only_nodes {
-        is_random_zone = true
+        # is_random_zone=false + zone=availability_zone 跟 API 实际行为一致
+        # 避免每次 plan 触发 RO 节点 destroy/create (state 里 is_random_zone 写 false, zone 写主 zone)
+        is_random_zone = false
+        zone           = var.availability_zone
       }
     }
   }
