@@ -69,6 +69,13 @@ resource "tencentcloud_mysql_instance" "this" {
       }
     }
   }
+
+  # API 行为缺陷: cluster_topology 创建时传 is_random_zone=false + 指定 zone,
+  # 但 DescribeDBInstances 返回时 is_random_zone 会变成 true/null, 导致 plan 每次都显示要重建 RO 节点
+  # (入参和回参不一致, 与实际配置无关), 因此忽略该属性的 drift 检测
+  lifecycle {
+    ignore_changes = [cluster_topology]
+  }
 }
 
 # KMS TDE storage encryption (independent resource, attached after instance creation)
