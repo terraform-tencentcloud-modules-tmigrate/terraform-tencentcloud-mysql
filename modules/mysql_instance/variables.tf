@@ -189,3 +189,9 @@ variable "slave_sync_mode" {
   type        = number
   default     = 0
 }
+
+variable "read_only_zones" {
+  description = "List of availability zones for read-only nodes in CLOUD_NATIVE_CLUSTER* topology. Empty list = 1 RO node in same zone as RW (backward compatible). Each entry creates one RO node in that zone. Max 5 RO nodes."
+  type        = list(string)
+  default     = []
+}

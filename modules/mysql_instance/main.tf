@@ -52,18 +52,20 @@ resource "tencentcloud_mysql_instance" "this" {
   slave_sync_mode   = var.slave_sync_mode
 
   # cluster topology (for CLOUD_NATIVE_CLUSTER / CLOUD_NATIVE_CLUSTER_EXCLUSIVE, 新形态云盘版单节点/集群)
-  # 单节点形态: 只传 read_write_node, read_only_nodes 不传 (空数组)
+  # read_only_zones 非空时按 list 生成多个 RO block, 各自指定 zone
+  # 空 list 时保留原行为 (1 RO node in same zone as RW, 向后兼容)
   dynamic "cluster_topology" {
     for_each = startswith(var.device_type, "CLOUD_NATIVE_CLUSTER") ? [1] : []
     content {
       read_write_node {
         zone = var.availability_zone
       }
-      read_only_nodes {
-        # is_random_zone=false + zone=availability_zone 跟 API 实际行为一致
-        # 避免每次 plan 触发 RO 节点 destroy/create (state 里 is_random_zone 写 false, zone 写主 zone)
-        is_random_zone = false
-        zone           = var.availability_zone
+      dynamic "read_only_nodes" {
+        for_each = length(var.read_only_zones) > 0 ? var.read_only_zones : [var.availability_zone]
+        content {
+          is_random_zone = false
+          zone           = read_only_nodes.value
+        }
       }
     }
   }
