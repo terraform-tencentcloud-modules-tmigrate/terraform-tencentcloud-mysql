@@ -75,7 +75,10 @@ resource "tencentcloud_mysql_instance" "this" {
   # 但 DescribeDBInstances 返回时 is_random_zone 会变成 true/null, 导致 plan 每次都显示要重建 RO 节点
   # (入参和回参不一致, 与实际配置无关), 因此忽略该属性的 drift 检测
   lifecycle {
-    ignore_changes = [cluster_topology]
+    # cluster_topology: API 入参和回参不一致, 忽略 drift
+    # disk_encryption: 腾讯云 API 静默忽略此参数 (不报错也不生效), 导致 plan 永远 forces replacement.
+    #   忽略后避免死循环: 代码写 disk_encryption = "on" 不再触发重建, 实际是否加密以控制台为准.
+    ignore_changes = [cluster_topology, disk_encryption]
   }
 }
 
