@@ -24,6 +24,7 @@ resource "tencentcloud_mysql_instance" "this" {
   engine_version    = var.engine_version
   device_type       = var.device_type
   disk_type         = var.disk_type
+  disk_encryption   = var.disk_encryption
   project_id        = var.project_id
   root_password     = local.root_password
   security_groups   = var.security_groups

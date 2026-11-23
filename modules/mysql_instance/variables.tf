@@ -41,6 +41,18 @@ variable "disk_type" {
 }
 
 # ---------------------------------------------------------------------------
+# Disk encryption (tencentcloud_mysql_instance.disk_encryption)
+# Set at creation time (ForceNew), only cloud-disk edition instances support it.
+# CLOUD_NATIVE_CLUSTER / CLOUD_NATIVE_CLUSTER_EXCLUSIVE are cloud-disk editions.
+# ---------------------------------------------------------------------------
+
+variable "disk_encryption" {
+  description = "Whether to enable disk encryption at creation time. Valid value: `on` (enable); otherwise not enabled. Only cloud-disk edition instances support this. ForceNew — cannot be modified after creation."
+  type        = string
+  default     = null
+}
+
+# ---------------------------------------------------------------------------
 # KMS TDE storage encryption (tencentcloud_mysql_instance_encryption_operation)
 # Independent resource, attached after instance creation.
 # ---------------------------------------------------------------------------
