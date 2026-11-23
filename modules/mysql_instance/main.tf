@@ -23,8 +23,7 @@ resource "tencentcloud_mysql_instance" "this" {
   cpu  = var.cpu
   engine_version    = var.engine_version
   device_type       = var.device_type
-  # 本地盘机型 (UNIVERSAL / EXCLUSIVE) 不支持 disk_type, 传了会 forces replacement
-  disk_type         = contains(["UNIVERSAL", "EXCLUSIVE"], var.device_type) ? null : var.disk_type
+  disk_type         = var.disk_type
   disk_encryption   = var.disk_encryption
   project_id        = var.project_id
   root_password     = local.root_password
