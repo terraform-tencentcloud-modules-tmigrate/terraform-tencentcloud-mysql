@@ -23,7 +23,8 @@ resource "tencentcloud_mysql_instance" "this" {
   cpu  = var.cpu
   engine_version    = var.engine_version
   device_type       = var.device_type
-  disk_type         = var.disk_type
+  # 本地盘机型 (UNIVERSAL / EXCLUSIVE) 不支持 disk_type, 传了会 forces replacement
+  disk_type         = contains(["UNIVERSAL", "EXCLUSIVE"], var.device_type) ? null : var.disk_type
   disk_encryption   = var.disk_encryption
   project_id        = var.project_id
   root_password     = local.root_password
@@ -78,9 +79,7 @@ resource "tencentcloud_mysql_instance" "this" {
     # cluster_topology: API 入参和回参不一致, 忽略 drift
     # disk_encryption: 腾讯云 API 静默忽略此参数 (不报错也不生效), 导致 plan 永远 forces replacement.
     #   忽略后避免死循环: 代码写 disk_encryption = "on" 不再触发重建, 实际是否加密以控制台为准.
-    # slave_deploy_mode: CLOUD_NATIVE_CLUSTER 云盘版用 cluster_topology, 不走 slave_deploy_mode,
-    #   但 API 回参 slave_deploy_mode=1 (module 传 0), 导致 drift. 忽略避免 plan 永远显示要改.
-    ignore_changes = [cluster_topology, disk_encryption, slave_deploy_mode]
+    ignore_changes = [cluster_topology, disk_encryption]
   }
 }
 
