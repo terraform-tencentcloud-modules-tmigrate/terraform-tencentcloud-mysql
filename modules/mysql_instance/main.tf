@@ -78,7 +78,9 @@ resource "tencentcloud_mysql_instance" "this" {
     # cluster_topology: API 入参和回参不一致, 忽略 drift
     # disk_encryption: 腾讯云 API 静默忽略此参数 (不报错也不生效), 导致 plan 永远 forces replacement.
     #   忽略后避免死循环: 代码写 disk_encryption = "on" 不再触发重建, 实际是否加密以控制台为准.
-    ignore_changes = [cluster_topology, disk_encryption]
+    # slave_deploy_mode: CLOUD_NATIVE_CLUSTER 云盘版用 cluster_topology, 不走 slave_deploy_mode,
+    #   但 API 回参 slave_deploy_mode=1 (module 传 0), 导致 drift. 忽略避免 plan 永远显示要改.
+    ignore_changes = [cluster_topology, disk_encryption, slave_deploy_mode]
   }
 }
 
